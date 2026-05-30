@@ -46,4 +46,4 @@ ENV/
 # ---- MISC ---
 OLD/
 docs/
-*checkpoint*
+.ipynb_checkpoints/
