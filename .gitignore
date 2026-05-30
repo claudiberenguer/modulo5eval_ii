@@ -46,3 +46,4 @@ ENV/
 # ---- MISC ---
 OLD/
 docs/
+*checkpoint*
