@@ -18,6 +18,8 @@ BEST_MODEL_PATH = MODELS_DIR / 'best_model.pkl'
 DT_MODEL_PATH = MODELS_TEST_DIR / 'tree.pkl'
 RL_MODEL_PATH = MODELS_TEST_DIR / 'logistic_regression.pkl'
 XGB_MODEL_PATH = MODELS_TEST_DIR / 'xgboost.pkl'
+RFC_MODEL_PATH = MODELS_TEST_DIR / 'RandomForestClassifierModel.pkl'
+NN_MODEL_PATH = MODELS_TEST_DIR / 'NeuralNetworkModel.pkl'
 
 # Rutas de las salidas visuales
 OUTPUTS_DIR = ROOT_DIR / 'outputs'
