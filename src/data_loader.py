@@ -1,4 +1,3 @@
-# Función para yo pedirle los datos y esta función, me los devuelve ya limpios y listos para usar en el modelo.
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
@@ -15,7 +14,6 @@ def loader(dataset_csv_filename=config.RAW_DATA_PATH, OHE=True):
     '''
     check_random_state(config.RANDOM_STATE)  # Asegura que el estado aleatorio es válido
 
-    # CSV en un DataFrame
     dset = pd.read_csv(dataset_csv_filename)
 
     # Eliminación de variables con fugas de datos (Data Leakage)
@@ -33,11 +31,11 @@ def loader(dataset_csv_filename=config.RAW_DATA_PATH, OHE=True):
     dset = dset[dset['children'] != 10]
     dset = dset[dset['babies'] != 10]
 
-    # Feature Engineering. Ingeniería de características
+    # Feature Engineering
     top_countries = dset['country'].value_counts().nlargest(10).index
     dset['country'] = dset['country'].where(dset['country'].isin(top_countries), 'Other')
 
-    # Convertir el mes a valor numérico para mantener la temporalidad
+    # Mantener la temporalidad
     month_map = {'January': 1, 'February': 2, 'March': 3, 'April': 4, 'May': 5, 'June': 6,
                  'July': 7, 'August': 8, 'September': 9, 'October': 10, 'November': 11, 'December': 12}
     dset['arrival_date_month'] = dset['arrival_date_month'].map(month_map)
@@ -68,14 +66,11 @@ def loader(dataset_csv_filename=config.RAW_DATA_PATH, OHE=True):
             'deposit_type', 'customer_type'
         ]
     else:
-        # primero se ponen en una lista los cmps de texto
-         # sdespués se convierten los campos a catgorías, se toman sus códigos numéricos (.cat.codes) y se sustitye a los string originales por ellos
         text_fields = [c for c in X_train.columns if X_train[c].dtype==object]
         for c in text_fields:
             X_train[c] = X_train[c].astype('category').cat.codes
             X_test[c] = X_test[c].astype('category').cat.codes
     
-    # Mejor hacer la lista dinámica, para que no se pierda nada
     list_numeric_cols = [col for col in X_train.columns if col not in list_one_hot_cols]
 
     columns_preprocessor = ColumnTransformer(transformers=[
@@ -84,14 +79,11 @@ def loader(dataset_csv_filename=config.RAW_DATA_PATH, OHE=True):
         ('numeric', MinMaxScaler(), list_numeric_cols)
     ])
 
-    # fit_transform solo en train, transform en test
     X_train_processed = columns_preprocessor.fit_transform(X_train)
     X_test_processed = columns_preprocessor.transform(X_test)
 
-    # Restaurar a DataFrame para no perder los nombres
     nombres_columnas = columns_preprocessor.get_feature_names_out()
 
-    # Se limpia el texto que añade scikit-learn por defecto
     nombres_columnas = [nombre.replace('one_hot__', '').replace('numeric__', '') for nombre in nombres_columnas]
 
     X_train = pd.DataFrame(X_train_processed, columns=nombres_columnas, index=X_train.index)
