@@ -29,8 +29,8 @@ def predict(reservas: DatosReserva):
     Recibe datos de nuevas reservas en formato JSON y devuelve si van a cancelar.
     """
     try:
-        # Cambiar config.DT_MODEL_PATH para el árbol de decición o config.RL_MODEL_PATH para la regresión logística
-        modelo = cargar_modelo_entrenado(config.RL_MODEL_PATH)
+        # Cambiar config.DT_MODEL_PATH para el árbol de decición, config.RL_MODEL_PATH para la regresión logística o config.XGB_MODEL_PATH para XGBoost
+        modelo = cargar_modelo_entrenado(config.XGB_MODEL_PATH)
         if modelo is None:
             raise HTTPException(status_code=500, detail="Modelo no encontrado en el servidor.")
 
@@ -52,7 +52,7 @@ def evaluate():
     """
     try:
         # Cargar el modelo
-        modelo = cargar_modelo_entrenado(config.RL_MODEL_PATH)
+        modelo = cargar_modelo_entrenado(config.XGB_MODEL_PATH)
         
         _, X_test, _, y_test = loader(OHE=True)
         
