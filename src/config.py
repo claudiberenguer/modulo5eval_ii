@@ -16,6 +16,7 @@ MODELS_DIR = ROOT_DIR / 'models'
 MODELS_TEST_DIR = MODELS_DIR / 'tests'
 BEST_MODEL_PATH = MODELS_DIR / 'best_model.pkl'
 DT_MODEL_PATH = MODELS_TEST_DIR / 'tree.pkl'
+RL_MODEL_PATH = MODELS_TEST_DIR / 'logistic_regression.pkl'
 
 # Rutas de las salidas visuales
 OUTPUTS_DIR = ROOT_DIR / 'outputs'
