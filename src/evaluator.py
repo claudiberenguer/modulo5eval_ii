@@ -9,12 +9,13 @@ from sklearn.metrics import (accuracy_score, precision_score, recall_score,
                              ConfusionMatrixDisplay, RocCurveDisplay)
 
 
-def calcular_metricas(modelo, X_test, y_test, nombre_modelo):
+# para que pueda tratar conjuntamente el modelo de red neuronal y los moddelos de scikit-learn, se deben pasar como parámetros y_test, y_pred e y_proba, ya que el método predict_proba no es común a todos los modelos y ya no es necesario pasar X_text y modelo
+def calcular_metricas(y_test, y_pred, y_pred_proba, nombre_modelo):
     """
     Calcula las medidas de rendimiento clave enfocadas en la clase 1 (cancelaciones).
     """
-    y_pred = modelo.predict(X_test)
-    y_pred_proba = modelo.predict_proba(X_test)[:, 1]
+    #y_pred = modelo.predict(X_test)
+    #y_pred_proba = modelo.predict_proba(X_test)[:, 1]
     
     resultado = pd.DataFrame(data=[
         accuracy_score(y_test, y_pred),
@@ -30,19 +31,20 @@ def calcular_metricas(modelo, X_test, y_test, nombre_modelo):
     resultado = (resultado * 100).round(2).astype(str) + '%'                          
     return resultado 
 
-def evaluar_modelo(modelo, X_train, X_test, y_train, y_test, nombre_modelo):
+# para que pueda tratar conjuntamente el modelo de red neuronal y los moddelos de scikit-learn, se deben pasar como parámetros y_test, y_pred e y_proba, ya que el método predict_proba no es común a todos los modelos y ya no es necesario pasar X_text y modelo
+def evaluar_modelo(y_train, y_test, y_pred_train, y_pred_test, y_proba_test, nombre_modelo):
     """
     Genera un reporte completo: métricas de train/test, Matriz de Confusión y Curva ROC.
     """
     sns.set_theme(font_scale=1.2)
     
     # 1. Reportes en texto plano por consola
-    y_pred_train = modelo.predict(X_train)
+    #y_pred_train = modelo.predict(X_train)
     print(f"\n\t  Reporte de clasificación (Entrenamiento) - {nombre_modelo}")
     print("-" * 65)
     print(classification_report(y_train, y_pred_train))
     
-    y_pred_test = modelo.predict(X_test)
+    #y_pred_test = modelo.predict(X_test)
     print(f"\n\t  Reporte de clasificación (Test) - {nombre_modelo}")
     print("-" * 65)
     print(classification_report(y_test, y_pred_test))
@@ -54,19 +56,21 @@ def evaluar_modelo(modelo, X_train, X_test, y_train, y_test, nombre_modelo):
     royalblue = LinearSegmentedColormap.from_list('royalblue', [(0, (1,1,1)), (1, (0.25,0.41,0.88))])
     royalblue_r = royalblue.reversed()
     
-    # 3. Gráfico 1: Matriz de confusión
-    ConfusionMatrixDisplay.from_estimator(modelo, X_test, y_test, colorbar=False, cmap=royalblue_r, ax=ax1)
+    # 3. Gráfico 1: Matriz de confusión. Para que sea compatible con distintos tipos de modelos, se usa el me´todo from_predictions en lugar de from_estimator
+    ConfusionMatrixDisplay.from_predictions(y_test, y_pred_test, colorbar=False, cmap=royalblue_r, ax=ax1)
+   #ConfusionMatrixDisplay.from_estimator(modelo, X_test, y_test, colorbar=False, cmap=royalblue_r, ax=ax1)
     ax1.set_title('Matriz de Confusión (Test)')                                     
     ax1.grid(False)
     
-    # 4. Gráfico 2: Curva ROC
-    RocCurveDisplay.from_estimator(modelo, X_test, y_test, ax=ax2)
+    # 4. Gráfico 2: Curva ROC. Para que sea compatible con distintos tipos de modelos, se usa el me´todo from_predictions en lugar de from_estimator
+    #RocCurveDisplay.from_predictions(modelo, X_test, y_test, ax=ax2)
+    RocCurveDisplay.from_predictions(y_test, y_proba_test, ax=ax2)
     ax2.set_xlabel('Tasa de Falsos Positivos')
     ax2.set_ylabel('Tasa de Verdaderos Positivos')
     ax2.set_title('Curva ROC (Test)')
     
     # 5. Gráfico 3: Tabla de métricas
-    resultado_metricas = calcular_metricas(modelo, X_test, y_test, nombre_modelo)
+    resultado_metricas = evaluar_modelo(y_train, y_test, y_pred_train, y_pred_test, y_proba_test, nombre_modelo)
     table = ax3.table(cellText=resultado_metricas.values, colLabels=resultado_metricas.columns, rowLabels=resultado_metricas.index, loc='center')
     table.scale(0.8, 2)
     table.set_fontsize(12)
