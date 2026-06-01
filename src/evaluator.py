@@ -28,7 +28,7 @@ def calcular_metricas(modelo, X_test, y_test, nombre_modelo):
     
     # Formato porcentaje para que sea más legible
     resultado = (resultado * 100).round(2).astype(str) + '%'                          
-    return resultado 
+    return resultado
 
 def evaluar_modelo(modelo, X_train, X_test, y_train, y_test, nombre_modelo):
     """
