@@ -1,4 +1,3 @@
-# Función para yo pedirle los datos y esta función, me los devuelve ya limpios y listos para usar en el modelo.
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
@@ -55,13 +54,10 @@ def loader(columns_info, OHE:bool) -> (pd.core.frame.DataFrame, pd.core.frame.Da
          si false los campos de texto se codifican a categoría y después a numérico usando sus códigos
     '''
 
-    # carga del csv en un dataframe
     dset = pd.read_csv(config.RAW_DATA_PATH)
 
-    # se aletatoriza la posición de las filas del dataset
     dset = dset.sample(frac=1).reset_index(drop=True)
     
-    # Eliminación de features inconvenientes o irrelevantes según columns_info
     columns_to_drop = columns_info[columns_info.kd=='drop'].index
     dset.drop(columns_to_drop, axis= 1, inplace=True)
 

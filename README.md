@@ -8,7 +8,7 @@ Este proyecto es la resolución de la práctica final del módulo de Machine Lea
 
 Este proyecto ha sido desarrollado en pareja, dividiendo las responsabilidades para simular un entorno de trabajo real:
 
-* **Manuel Yerbes:** Encargado del diseño de la arquitectura de software modular (fábrica de datos, evaluación, predicción), desarrollo de los modelos de Regresión Logística y Árbol de Decisión y XGBoost, y de la implementación del bonus técnico (API REST con FastAPI).
+* **Manuel Yerbes García:** Encargado del diseño de la arquitectura de software modular (fábrica de datos, evaluación, predicción), desarrollo de los modelos de Regresión Logística y Árbol de Decisión y XGBoost, y de la implementación del bonus técnico (API REST con FastAPI).
 * **Claudi Berenguer Sabaté:** Encargado de la experimentación con modelos (Random Forest, Red Neuronal Multicapa), ajustes de hiperparámetros y validación de las métricas finales.
 * **Trabajo Conjunto:** Análisis Exploratorio de Datos (EDA), selección de la métrica principal de negocio y redacción de esta documentación.
 
@@ -60,6 +60,20 @@ python -m venv .venv
 source .venv/bin/activate  # En Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
+
+Si se prefiere mejor usarlo con 'uv', sería:
+
+```bash
+# Crear el entorno virtual con uv
+uv venv
+
+# Activar el entorno virtual
+source .venv/bin/activate  # En Windows: .venv\Scripts\activate
+
+# Instalar las dependencias usando uv
+uv pip install -r requirements.txt
+```
+
 
 **2. Ejecutar la comparativa de modelos:**
 Abre Jupyter Notebook o tu editor de preferencia y ejecuta de principio a fin el archivo notebooks/finales/comparativa_modelos.ipynb. Esto entrenará los modelos, generará los gráficos y guardará los archivos .pkl en la carpeta models/tests/.
