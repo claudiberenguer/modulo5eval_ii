@@ -48,7 +48,7 @@ columns_info = pd.DataFrame({
 columns_info.columns = ['type', 'kd', 'comment']
 
 
-def loader(columns_info, OHE:bool) -> (pd.core.frame.DataFrame, pd.core.frame.DataFrame, pd.core.series.Series, pd.core.series.Series):
+def loader(OHE:bool) -> (pd.core.frame.DataFrame, pd.core.frame.DataFrame, pd.core.series.Series, pd.core.series.Series):
     '''
     dataset_csv_filename: ruta al csv con los datos
     OHE: si es true, los campos categóricos se condifican con OneHotEncoder. 
@@ -144,9 +144,6 @@ def loader(columns_info, OHE:bool) -> (pd.core.frame.DataFrame, pd.core.frame.Da
     
     return (X_train, X_test, y_train, y_test)
 
-if __name__ == "__main__":
-    X_train, X_test, y_train, y_test = loader(columns_info, OHE=True)
-    pass
    
 
 
