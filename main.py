@@ -26,7 +26,7 @@ def home():
 @app.post("/predict")
 def predict(reservas: DatosReserva):
     """
-    Recibe datos de nuevas reservas en formato JSON y devuelve si van a cancelar.
+    Recibe datos en JSON y devuelve si van a cancelar o si no.
     """
     try:
         # Cambiar config.DT_MODEL_PATH para el árbol de decición, config.RL_MODEL_PATH para la regresión logística o config.XGB_MODEL_PATH para XGBoost
@@ -34,12 +34,10 @@ def predict(reservas: DatosReserva):
         if modelo is None:
             raise HTTPException(status_code=500, detail="Modelo no encontrado en el servidor.")
 
-        # De JSON a DataFrame
         df_nuevos_datos = pd.DataFrame(reservas.datos)
 
         resultados = predecir_cancelacion(modelo, df_nuevos_datos)
 
-        # Resultado en JSON
         return {"predicciones": resultados.to_dict(orient="records")}
     
     except Exception as e:
@@ -48,10 +46,9 @@ def predict(reservas: DatosReserva):
 @app.get("/evaluate")
 def evaluate():
     """
-    Carga los datos de testeo y evalúa el modelo actual en producción.
+    Evalúa el modelo actual en producción.
     """
     try:
-        # Cargar el modelo
         modelo = cargar_modelo_entrenado(config.XGB_MODEL_PATH)
         
         _, X_test, _, y_test = loader(OHE=True)
@@ -63,8 +60,3 @@ def evaluate():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-"""
-No se pone el endpoint /train porque eso bloquearía la API durante el proceso de entrenamiento, que puede ser largo. En un entorno real, el entrenamiento se haría por separado y se actualizaría el modelo en producción sin afectar a los usuarios.
-"""
-
-# Encender la api con: uvicorn main:app --reload
