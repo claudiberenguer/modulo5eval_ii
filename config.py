@@ -1,6 +1,9 @@
+# El fichero config.py sirve para guardar todas las variables globales, rutas de carpetas y parámetros fijos en un solo lugar.
+
 from pathlib import Path
 
 # Ruta raíz del proyecto
+# __file__ es este script (config.py). parent.parent nos lleva a la carpeta principal
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
 # Ruta de datos
