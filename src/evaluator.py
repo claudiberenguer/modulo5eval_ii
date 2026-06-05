@@ -63,7 +63,7 @@ def evaluar_modelo(y_train, y_test, y_pred_train, y_pred_test, y_proba_test, nom
     ax2.set_title('Curva ROC (Test)')
     
     # Gráfico 3: Tabla de métricas
-    resultado_metricas = evaluar_modelo(y_train, y_test, y_pred_train, y_pred_test, y_proba_test, nombre_modelo)
+    resultado_metricas = calcular_metricas(y_test, y_pred_test, y_proba_test, nombre_modelo)
     table = ax3.table(cellText=resultado_metricas.values, colLabels=resultado_metricas.columns, rowLabels=resultado_metricas.index, loc='center')
     table.scale(0.8, 2)
     table.set_fontsize(12)

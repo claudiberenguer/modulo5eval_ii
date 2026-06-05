@@ -119,14 +119,18 @@ def loader(OHE:bool) -> (pd.core.frame.DataFrame, pd.core.frame.DataFrame, pd.co
     list_numeric_cols = [col for col in X.columns if col not in list_one_hot_cols]
 
     columns_preprocessor = ColumnTransformer(transformers=[
-        ('one_hot', OneHotEncoder(drop='first', sparse_output=False), list_one_hot_cols),
-        #('one_hot', OneHotEncoder(drop='if_binary', sparse_output=False), list_one_hot_cols),
-        #('ordinal', OrdinalEncoder(), list_ordinal_cols),
+        ('one_hot', OneHotEncoder(drop='first', sparse_output=False, handle_unknown='ignore'), list_one_hot_cols), # Aprende solo del X_train con handle_unknown
         ('numeric', MinMaxScaler(), list_numeric_cols)
     ])
+    
+    # train_test_split se hace antes de trasnformar nada. Se incluye stratify para asegurar que la distribución del target sea homogénea en train y test. 
+    X_train, X_test, y_train, y_test = train_test_split(X_processed, y, test_size=0.2, stratify=y)
+    
 
     # fit_transform en el conjunto entero de features. No se separa por evitar el caso de categorías que por lo que fuese estuviesen en X_train pero no en X_test, lo que haría que OnedHotEncoder resultase en shapes distintas para train y test. 
-    X_processed_arr = columns_preprocessor.fit_transform(X)
+    X_train_processed_arr = columns_preprocessor.fit_transform(X_train)
+
+    X_test_processed_arr = columns_preprocessor.transform(X_test)
 
     # Restaurar a DataFrame para no perder los nombres, emmpezando por obtener los nombres de las columnas después de la transformación.
     nombres_columnas = columns_preprocessor.get_feature_names_out()
@@ -134,10 +138,8 @@ def loader(OHE:bool) -> (pd.core.frame.DataFrame, pd.core.frame.DataFrame, pd.co
     # Se limpia el texto que añade scikit-learn por defecto
     nombres_columnas = [nombre.replace('one_hot__', '').replace('numeric__', '') for nombre in nombres_columnas]
 
-    X_processed = pd.DataFrame(X_processed_arr, columns=nombres_columnas, index=X.index)
-
-    # train_test_split se hace antes de trasnformar nada. Se incluye stratify para asegurar que la distribución del target sea homogénea en train y test. 
-    X_train, X_test, y_train, y_test = train_test_split(X_processed, y, test_size=0.2, stratify=y)
+    X_train = pd.DataFrame(X_train_processed_arr, columns=nombres_columnas, index=X_train.index)
+    X_test = pd.DataFrame(X_test_processed_arr, columns=nombres_columnas, index=X_test.index)
     
     return (X_train, X_test, y_train, y_test)
 
