@@ -30,7 +30,7 @@ def predict(reservas: DatosReserva):
     """
     try:
         # Cambiar config.DT_MODEL_PATH para el árbol de decición, config.RL_MODEL_PATH para la regresión logística o config.XGB_MODEL_PATH para XGBoost
-        modelo = cargar_modelo_entrenado(config.XGB_MODEL_PATH)
+        modelo = cargar_modelo_entrenado(config.DT_MODEL_PATH)
         if modelo is None:
             raise HTTPException(status_code=500, detail="Modelo no encontrado en el servidor.")
 
@@ -49,11 +49,11 @@ def evaluate():
     Evalúa el modelo actual en producción.
     """
     try:
-        modelo = cargar_modelo_entrenado(config.XGB_MODEL_PATH)
+        modelo = cargar_modelo_entrenado(config.DT_MODEL_PATH)
         
         _, X_test, _, y_test = loader(OHE=True)
         
-        metricas = calcular_metricas(modelo, X_test, y_test, 'Regresión Logística API')
+        metricas = calcular_metricas(modelo, X_test, y_test, 'Árbol de Decisión API')
         
         return {"metricas": metricas.to_dict()}
     

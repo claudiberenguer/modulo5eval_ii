@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
-import config as config
+import src.config as config
 
 from sklearn.utils.validation import check_random_state
 check_random_state(42)
@@ -111,7 +111,7 @@ def loader(OHE:bool) -> (pd.core.frame.DataFrame, pd.core.frame.DataFrame, pd.co
     else:
         # primero se ponen en una lista los cmps de texto
         # después se convierten los campos a catgorías, se toman sus códigos numéricos (.cat.codes) y se sustitye a los string originales por ellos
-        text_fields = [c for c in X.columns if X_train[c].dtype==object]
+        text_fields = [c for c in X.columns if X[c].dtype==object]
         for c in text_fields:
             X[c] = X[c].astype('category').cat.codes  
 
@@ -124,7 +124,7 @@ def loader(OHE:bool) -> (pd.core.frame.DataFrame, pd.core.frame.DataFrame, pd.co
     ])
     
     # train_test_split se hace antes de trasnformar nada. Se incluye stratify para asegurar que la distribución del target sea homogénea en train y test. 
-    X_train, X_test, y_train, y_test = train_test_split(X_processed, y, test_size=0.2, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y)
     
 
     # fit_transform en el conjunto entero de features. No se separa por evitar el caso de categorías que por lo que fuese estuviesen en X_train pero no en X_test, lo que haría que OnedHotEncoder resultase en shapes distintas para train y test. 
