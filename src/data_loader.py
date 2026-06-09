@@ -13,12 +13,12 @@ check_random_state(42)
 ## se puede importar desde este módulo para tener toda la información sobre las columnas en un solo lugar, lo que facilita la comprensión y el mantenimiento del código. Además, se puede actualizar fácilmente si se decide cambiar el tratamiento de alguna columna en el futuro.
 columns_info = pd.DataFrame({
 'hotel':['cat', 'keep', ''],
-'is_canceled':['cat', 'keep', 'target, balanced dataset (63% 0, 37% 1, suspiciosly too much cancelations'],
+'is_canceled':['cat', 'keep', 'target, dataset ligeramente desblanceado (63%, 37%)'],
 'lead_time':['num', 'keep', ''],
-'arrival_date_year':['ord', 'drop', 'misleading, those are years in the past, not useful for prediction, they will never come back. For the dataset to be consistent, the target should be independent ofo it'],
-'arrival_date_month':['ord', 'drop', 'redundant with arrival_dat_week_number'],
+'arrival_date_year':['ord', 'drop', 'el año en que se hizo la reserva no tiene valor para predecir a futro, En todo caso se usa para ver si hay correlación entre la relación de cancelado/no_cancelado y el año, en cuyo caso el dataset no sería coherente y se debería fraccionar en partes homogéneas y tomar la parte más reciente para predecir a futuro. En este caso no se ha visto esa correlación, por lo que se mantiene el dataset entero.'],
+'arrival_date_month':['ord', 'drop', 'redundante con arrival_dat_week_number'],
 'arrival_date_week_number':['ord', 'keep', ''],
-'arrival_date_day_of_month':['ord', 'drop', 'redundant with arrival_dat_week_number'],
+'arrival_date_day_of_month':['ord', 'drop', 'redundante con arrival_dat_week_number'],
 'stays_in_weekend_nights':['num', 'keep', ''],
 'stays_in_week_nights':['num', 'keep', ''],
 'adults':['num', 'keep','drop rows with 0'],
@@ -83,7 +83,7 @@ def loader(OHE:bool) -> (pd.core.frame.DataFrame, pd.core.frame.DataFrame, pd.co
         top_countries = dset['country'].value_counts().nlargest(10).index
         dset['country'] = dset['country'].where(dset['country'].isin(top_countries), 'Other')
 
-    # Simplificar 'comany' a variable binaria (con empresa/sin empresa)'
+    # Simplificar 'company' a variable binaria (con empresa/sin empresa)'
     if columns_info.loc['company','kd'] == 'keep':
         dset['has_company'] = dset['company'].notnull().astype(int)
     
