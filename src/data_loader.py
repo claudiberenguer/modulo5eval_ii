@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
-import config as config
+import src.config as config
 
 from sklearn.utils.validation import check_random_state
 check_random_state(42)

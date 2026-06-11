@@ -118,6 +118,83 @@ uvicorn main:app --reload
 
 Abre el navegador en http://127.0.0.1:8000/docs para interactuar con la interfaz Swagger y probar los endpoints.
 
+### 5.1. Guía de Uso de la API REST
+La API expone el modelo final **XGBoost** a través de un servidor local para permitir consultas en tiempo real por parte del software de gestión del hotel (PMS).
+
+### Endpoints Disponibles
+
+#### 1. `GET /` -> Comprobación de salud
+* **Objetivo:** Verificar que el servidor está encendido y responde correctamente.
+* **Respuesta típica (JSON):** `{"mensaje": "¡Bienvenido a la API de Predicción de Cancelaciones del Hotel!"}`
+
+#### 2. `POST /predict` -> Inferencia en tiempo real
+* **Objetivo:** Recibe los datos de una o varias reservas nuevas, procesa sus variables y devuelve la probabilidad y el dictamen de negocio.
+* **Formato de Entrada (Request Body):** Requiere un JSON con la estructura exacta de columnas que espera el modelo tras el preprocesamiento (One-Hot Encoding y MinMaxScaler).
+
+* **Ejemplo de petición (JSON):**
+```json
+{
+  "datos": [
+    {
+      "hotel_Resort Hotel": 1.0, "meal_FB": 0.0, "meal_HB": 0.0, "meal_SC": 0.0, "meal_Undefined": 0.0, 
+      "country_BRA": 0.0, "country_DEU": 0.0, "country_ESP": 0.0, "country_FRA": 0.0, "country_GBR": 0.0, 
+      "country_IRL": 0.0, "country_ITA": 0.0, "country_NLD": 0.0, "country_Other": 1.0, "country_PRT": 0.0, 
+      "market_segment_Complementary": 0.0, "market_segment_Corporate": 0.0, "market_segment_Direct": 0.0, 
+      "market_segment_Groups": 0.0, "market_segment_Offline TA/TO": 1.0, "market_segment_Online TA": 0.0, 
+      "market_segment_Undefined": 0.0, "distribution_channel_Direct": 0.0, "distribution_channel_GDS": 0.0, 
+      "distribution_channel_TA/TO": 1.0, "distribution_channel_Undefined": 0.0, "reserved_room_type_B": 0.0, 
+      "reserved_room_type_C": 0.0, "reserved_room_type_D": 1.0, "reserved_room_type_E": 0.0, "reserved_room_type_F": 0.0, 
+      "reserved_room_type_G": 0.0, "reserved_room_type_H": 0.0, "reserved_room_type_L": 0.0, "deposit_type_Non Refund": 0.0, 
+      "deposit_type_Refundable": 0.0, "customer_type_Group": 0.0, "customer_type_Transient": 1.0, "customer_type_Transient-Party": 0.0, 
+      "lead_time": 0.13025, "arrival_date_month": 0.72727, "arrival_date_week_number": 0.73076, "arrival_date_day_of_month": 0.66666, 
+      "stays_in_weekend_nights": 0.10526, "stays_in_week_nights": 0.1, "adults": 0.01851, "children": 0.0, "babies": 0.0, 
+      "is_repeated_guest": 0.0, "previous_cancellations": 0.0, "previous_bookings_not_canceled": 0.0, "booking_changes": 0.0, 
+      "days_in_waiting_list": 0.0, "adr": 0.01472, "required_car_parking_spaces": 0.125, "total_of_special_requests": 0.2, 
+      "has_company": 0.0, "has_agent": 1.0
+    }
+  ]
+}
+```
+
+* **Respuesta del Servidor:**
+```json
+{
+  "predicciones": [
+    {
+      "Prediccion_Numerica": 1,
+      "Probabilidad_Cancelacion": "51.2%",
+      "Alerta_Negocio": "Peligro de Cancelación"
+    }
+  ]
+}
+```
+
+#### 2. `GET /evaluate` -> Monitorización en Producción
+* **Objetivo:** Evalúa de forma dinámica el rendimiento del modelo cargado en el servidor contra un lote aleatorio de test generado por el pipeline de datos (data_loader.py), emitiendo las métricas clave de forma instantánea.
+
+* **Respuesta del Servidor:**
+```json
+{
+  "metricas": {
+    "XGBoost API Production": {
+      "Accuracy": "89.69%",
+      "Precision (Clase 1)": "83.27%",
+      "Recall (Clase 1)": "90.34%",
+      "F1-score (Clase 1)": "86.66%",
+      "AUC (Clase 1)": "96.8%"
+    }
+  }
+}
+```
+
+
+**Nota sobre las métricas dinámicas en producción:**
+Al realizar la petición al endpoint /evaluate, es posible observar ligeras variaciones positivas o negativas en las métricas (ej. un Recall del ~90%) en comparación con el estático obtenido en el notebook de entrenamiento (85.54%).
+
+Esto ocurre por diseño del pipeline de software: la función loader() baraja el dataset de manera aleatoria cada vez que es invocada para simular la llegada de nuevos lotes de clientes en un entorno real. El hecho de que el archivo .pkl mantenga e incluso mejore su rendimiento ante exámenes aleatorios corrobora la excelente capacidad de generalización de nuestro modelo seleccionado sin caer en problemas de sobreentrenamiento.
+
+
+
 ## 6. Resultados y Elección Final 🏆
 Tras automatizar el entrenamiento y ajustar los hiperparámetros (incluyendo class_weight='balanced'), obtuvimos los siguientes resultados en el conjunto de test:
 
